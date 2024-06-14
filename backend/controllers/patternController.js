@@ -9,6 +9,18 @@ exports.getPatterns = async (req, res) => {
   }
 };
 
+exports.getPatternById = async (req, res) => {
+  try {
+    const pattern = await Pattern.findById(req.params.id);
+    if (!pattern) {
+      return res.status(404).json({ message: 'Pattern not found' });
+    }
+    res.json(pattern);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.addPattern = async (req, res) => {
   try {
     const pattern = new Pattern(req.body);
@@ -22,6 +34,9 @@ exports.addPattern = async (req, res) => {
 exports.updatePattern = async (req, res) => {
   try {
     const pattern = await Pattern.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!pattern) {
+      return res.status(404).json({ message: 'Pattern not found' });
+    }
     res.json(pattern);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -30,7 +45,10 @@ exports.updatePattern = async (req, res) => {
 
 exports.deletePattern = async (req, res) => {
   try {
-    await Pattern.findByIdAndDelete(req.params.id);
+    const pattern = await Pattern.findByIdAndDelete(req.params.id);
+    if (!pattern) {
+      return res.status(404).json({ message: 'Pattern not found' });
+    }
     res.json({ message: 'Pattern deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
